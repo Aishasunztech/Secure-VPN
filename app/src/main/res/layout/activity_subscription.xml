@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SubscriptionActivity">
+
+
+
+
+    <ScrollView
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <RelativeLayout
+
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:padding="6dp"
+                            android:background="@color/dataOut"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="110dp"
+                                android:background="@color/white"
+                                android:orientation="vertical">
+
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:gravity="center"
+                                    android:text="Basic"
+                                    android:textColor="@color/black" />
+
+                                <LinearLayout
+                                    android:visibility="gone"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="25dp"
+                                    android:orientation="horizontal">
+
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="US$"
+                                        android:textColor="@color/white"
+                                        android:textSize="16dp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="0.001"
+                                        android:textColor="@color/white"
+                                        android:textSize="32dp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="/ 3 months"
+                                        android:textColor="@color/white"
+                                        android:textSize="16dp" />
+
+
+                                </LinearLayout>
+
+                                <HorizontalScrollView
+
+                                    android:layout_marginTop="20dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent">
+
+                                    <LinearLayout
+                                        android:layout_gravity="center_horizontal"
+                                        android:orientation="horizontal"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <RelativeLayout
+
+                                            android:layout_marginTop="3dp"
+                                            android:layout_marginBottom="3dp"
+                                            android:layout_marginLeft="5dp"
+                                            android:background="@drawable/selected_country_back"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="30dp"
+                                            >
+
+                                            <ImageView
+                                                android:layout_marginLeft="2dp"
+                                                android:layout_marginRight="2dp"
+                                                android:layout_centerInParent="true"
+                                                android:scaleType="centerCrop"
+                                                android:layout_width="40dp"
+                                                android:layout_height="20dp"
+
+                                                android:src="@drawable/flag_usa"/>
+
+                                        </RelativeLayout>
+
+                                        <RelativeLayout
+                                            android:layout_marginRight="5dp"
+                                            android:layout_marginTop="3dp"
+                                            android:layout_marginLeft="5dp"
+                                            android:layout_marginBottom="3dp"
+                                            android:background="@drawable/selected_country_back"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="30dp"
+                                            >
+
+                                            <ImageView
+                                                android:layout_marginLeft="2dp"
+                                                android:layout_marginRight="2dp"
+                                                android:layout_centerInParent="true"
+                                                android:scaleType="centerCrop"
+                                                android:layout_width="40dp"
+                                                android:layout_height="20dp"
+
+                                                android:src="@drawable/germany_flg"/>
+
+                                        </RelativeLayout>
+
+
+                                    </LinearLayout>
+
+
+                                </HorizontalScrollView>
+
+                            </LinearLayout>
+
+
+                        </RelativeLayout>
+
+
+                        <Button
+                            android:layout_marginTop="20dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginBottom="4dp"
+                            android:visibility="visible"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:text="Subscribe"
+                            android:background="@color/dataOut"
+                            android:textColor="@color/white"
+                            android:id="@+id/btn_3"/>
+
+
+                    </LinearLayout>
+
+
+                </android.support.v7.widget.CardView>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:visibility="visible"
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+
+                            <RelativeLayout
+
+                                android:layout_marginRight="10dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:padding="6dp"
+                                android:background="@color/dataOut"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="110dp"
+                                    android:background="@color/white"
+                                    android:orientation="vertical">
+
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp"
+                                        android:gravity="center"
+                                        android:text="Advance"
+                                        android:textColor="@color/black" />
+
+                                    <LinearLayout
+                                        android:visibility="gone"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_marginTop="25dp"
+                                        android:orientation="horizontal">
+
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="US$"
+                                            android:textColor="@color/white"
+                                            android:textSize="16dp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="0.001"
+                                            android:textColor="@color/white"
+                                            android:textSize="32dp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="/ 3 months"
+                                            android:textColor="@color/white"
+                                            android:textSize="16dp" />
+
+
+                                    </LinearLayout>
+
+                                    <HorizontalScrollView
+
+                                        android:layout_marginTop="20dp"
+                                        android:layout_marginLeft="8dp"
+                                        android:layout_marginRight="5dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent">
+
+                                        <LinearLayout
+                                            android:layout_gravity="center_horizontal"
+                                            android:orientation="horizontal"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content">
+
+                                            <RelativeLayout
+
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_marginRight="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/flag_usa"/>
+
+                                            </RelativeLayout>
+
+                                            <RelativeLayout
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/germany_flg"/>
+
+                                            </RelativeLayout>
+                                            <RelativeLayout
+                                                android:layout_marginRight="5dp"
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_marginRight="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/singapore_flg"/>
+
+                                            </RelativeLayout>
+
+
+                                        </LinearLayout>
+
+
+                                    </HorizontalScrollView>
+
+                                </LinearLayout>
+
+
+                            </RelativeLayout>
+
+
+                            <Button
+                                android:layout_marginTop="20dp"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginBottom="4dp"
+                                android:visibility="visible"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Subscribe"
+                                android:background="@color/dataOut"
+                                android:textColor="@color/white"
+                                android:id="@+id/btn_6"/>
+
+
+                        </LinearLayout>
+
+
+                        <ImageView
+                            android:visibility="visible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@color/white"
+                            android:alpha="0.5"/>
+
+                        <ImageView
+                            android:visibility="visible"
+                            android:layout_margin="3dp"
+                            android:layout_width="110dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/compingsoon"/>
+
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_margin="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+
+                            <RelativeLayout
+
+                                android:layout_marginRight="10dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:padding="6dp"
+                                android:background="@color/dataOut"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="110dp"
+                                    android:background="@color/white"
+                                    android:orientation="vertical">
+
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp"
+                                        android:gravity="center"
+                                        android:text="Premium"
+                                        android:textColor="@color/black" />
+
+                                    <LinearLayout
+                                        android:visibility="gone"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_marginTop="25dp"
+                                        android:orientation="horizontal">
+
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="US$"
+                                            android:textColor="@color/white"
+                                            android:textSize="16dp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="0.001"
+                                            android:textColor="@color/white"
+                                            android:textSize="32dp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="/ 3 months"
+                                            android:textColor="@color/white"
+                                            android:textSize="16dp" />
+
+
+                                    </LinearLayout>
+
+                                    <HorizontalScrollView
+
+                                        android:layout_marginTop="20dp"
+                                        android:layout_marginLeft="8dp"
+                                        android:layout_marginRight="5dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent">
+
+                                        <LinearLayout
+                                            android:layout_gravity="center_horizontal"
+                                            android:orientation="horizontal"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content">
+
+                                            <RelativeLayout
+
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_marginRight="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/flag_usa"/>
+
+                                            </RelativeLayout>
+
+                                            <RelativeLayout
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_marginRight="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/germany_flg"/>
+
+                                            </RelativeLayout>
+                                            <RelativeLayout
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_marginRight="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/singapore_flg"/>
+
+                                            </RelativeLayout>
+                                            <RelativeLayout
+                                                android:layout_marginRight="5dp"
+                                                android:layout_marginTop="3dp"
+                                                android:layout_marginLeft="5dp"
+                                                android:layout_marginBottom="3dp"
+                                                android:background="@drawable/selected_country_back"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="30dp"
+                                                >
+
+                                                <ImageView
+                                                    android:layout_marginLeft="2dp"
+                                                    android:layout_marginRight="2dp"
+                                                    android:layout_centerInParent="true"
+                                                    android:scaleType="centerCrop"
+                                                    android:layout_width="40dp"
+                                                    android:layout_height="20dp"
+
+                                                    android:src="@drawable/netharland_flg"/>
+
+                                            </RelativeLayout>
+
+
+                                        </LinearLayout>
+
+
+                                    </HorizontalScrollView>
+
+                                </LinearLayout>
+
+
+                            </RelativeLayout>
+
+
+                            <Button
+                                android:layout_marginTop="20dp"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginBottom="4dp"
+                                android:visibility="visible"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Subscribe"
+                                android:background="@color/dataOut"
+                                android:textColor="@color/white"
+                                android:id="@+id/btn_12"/>
+
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:visibility="visible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@color/white"
+                            android:alpha="0.5"/>
+
+                        <ImageView
+                            android:visibility="visible"
+                            android:layout_margin="3dp"
+                            android:layout_width="110dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/compingsoon"/>
+
+
+                    </RelativeLayout>
+
+
+                </android.support.v7.widget.CardView>
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+
+
+</RelativeLayout>

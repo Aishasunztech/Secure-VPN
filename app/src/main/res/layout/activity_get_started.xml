@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10"
+    tools:context="de.blinkt.openvpn.activities.GetStartedActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.2">
+        <TextView
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Secure FREE Vpn"
+            android:textSize="@dimen/_25sdp"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6.3">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/started_screen"/>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2.5">
+
+        <TextView
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="@dimen/_18sdp"
+            android:gravity="center"
+            android:text="Secured, forever."
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="A VPN, or Virtual Private Network,allows you \n to create a secure connection to another network \n over the internet. "/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+
+                android:textStyle="bold"
+                android:background="@drawable/btn_blue_round"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:padding="@dimen/_4sdp"
+                android:text="GET STARTED"
+                android:textColor="@color/white"
+                android:onClick="getStartedBtn"
+                android:layout_width="@dimen/_150sdp"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
