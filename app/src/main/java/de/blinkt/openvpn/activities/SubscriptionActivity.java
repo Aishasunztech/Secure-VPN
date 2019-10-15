@@ -86,13 +86,12 @@ public class SubscriptionActivity extends BaseActivity implements View.OnClickLi
 
 
     private void loadVpnProfileAndStartActivity() {
-        ArrayList<VpnProfile> setList = new ArrayList<>();
 
         boolean sortByLRU = Preferences.getDefaultSharedPreferences(SubscriptionActivity.this).getBoolean(VPNProfileList.PREF_SORT_BY_LRU, false);
         Collection<VpnProfile> allvpn = getPM().getProfiles();
 
-        setList.addAll(allvpn);
-        if(allvpn!=null && allvpn.size()>0){
+        ArrayList<VpnProfile> setList = new ArrayList<>(allvpn);
+        if(allvpn.size() > 0){
 
             int index = Utils.getSelectedCountry(SubscriptionActivity.this);
 

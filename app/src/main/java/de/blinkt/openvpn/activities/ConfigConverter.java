@@ -25,7 +25,7 @@ import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.security.KeyChain;
 import android.security.KeyChainAliasCallback;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -620,11 +620,11 @@ public class ConfigConverter extends BaseActivity implements FileSelectCallback,
         super.onCreate(savedInstanceState);
 
         View view = getWindow().getDecorView();
-        int visiblility = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        int visiblility = WindowManager.LayoutParams.FLAG_FULLSCREEN;
 
         view.setSystemUiVisibility(visiblility);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.config_converter);
 
@@ -718,10 +718,8 @@ public class ConfigConverter extends BaseActivity implements FileSelectCallback,
 
         possibleName = possibleName.substring(0,(possibleName.lastIndexOf("."))-1);
 
-        if (possibleName != null) {
-            possibleName = possibleName.replace(".ovpn", "");
-            possibleName = possibleName.replace(".conf", "");
-        }
+        possibleName = possibleName.replace(".ovpn", "");
+        possibleName = possibleName.replace(".conf", "");
 
         startImportTask(null, possibleName);
 

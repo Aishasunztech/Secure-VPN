@@ -7,9 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4n.view.ViewPager;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,8 +24,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -34,6 +38,7 @@ import com.google.android.gms.ads.MobileAds;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.blinkt.openvpn.ConfigWorker;
 import de.blinkt.openvpn.LaunchVPN;
 import de.blinkt.openvpn.R;
 import de.blinkt.openvpn.Utils;
@@ -53,8 +58,10 @@ import de.blinkt.openvpn.views.ScreenSlidePagerAdapter;
 import de.blinkt.openvpn.views.SlidingTabLayout;
 import de.blinkt.openvpn.views.TabBarView;
 
+import static de.blinkt.openvpn.Utils.TOUR_STATUS;
 
-public class MainActivity extends BaseActivity
+
+public class MainActivity extends AppCompatActivity
         implements View.OnClickListener,
         VpnStatus.StateListener,
         DisconnectVPN.DisconnectListener
@@ -68,18 +75,18 @@ public class MainActivity extends BaseActivity
     private SlidingTabLayout mSlidingTabLayout;
     private TabBarView mTabs;
 
-    private static ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
     public static final String TAG = "MainActivityCh";
 
-    public static ArrayList<VpnProfile> setList = new ArrayList<>();
+    private ArrayList<VpnProfile> setList = new ArrayList<>();
     private LinearLayout linearLayoutHorizantal;
     private static final String connected_view = "connected_view";
     public static final String disconnected_view = "disconnected_view";
     private static final String TABS_VIEW = "TABS_VIEW";
     private static final String CONSTRAINT_VIEW = "CONSTRAINT_VIEW";
     private RelativeLayout constraintLayout;
-    public static TextView  tv_device_status, tv_2, tv_1;
+    public TextView tv_device_status, tv_2, tv_1;
     private static final int LanuchActivityRequestCode = 899;
 
     public static final String SHOW_FRAGMENT_TAG = "SHOW_FRAGMENT_TAG";
@@ -95,32 +102,40 @@ public class MainActivity extends BaseActivity
     private static final String FEATURE_LEANBACK = "android.software.leanback";
 
 
-    public static String LAYOUT_TAG = "LAYOUT_TAG";
+    public static final String LAYOUT_TAG = "LAYOUT_TAG";
 
     private LinearLayout layout_country_bold;
 
-    private static String connecting = "Connecting..";
-    private static String other = "other..";
+    private static final String connecting = "Connecting..";
+    private static final String other = "other..";
 
 
-    int counterLoad = 0 ;
+    int counterLoad = 0;
 
 
-    private static  ImageView statusDot,center_img ;
-    public static TextView connection_text_btn,tvStatus;
+    private ImageView statusDot, center_img;
+    private TextView connection_text_btn, tvStatus;
 
     private boolean inter1_load_check = false;
     private boolean inter2_load_check = false;
 
 
-    private InterstitialAd interstitialAd_1,interstitialAd_2;
-    private AdView adView_banner1;
+    private InterstitialAd interstitialAd_1, interstitialAd_2;
+    private AdView adView_banner1,  ad;
 
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
+        setTheme(R.style.AppCompatTHeme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("Sub_Pref", Context.MODE_PRIVATE);
+        if (!sharedPreferences.getBoolean(TOUR_STATUS, false)) {
+            Intent intent = new Intent(this, GetStartedActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         MobileAds.initialize(this, getResources().getString(R.string.app_id));
 
         if (getActionBar() != null) {
@@ -129,30 +144,55 @@ public class MainActivity extends BaseActivity
 
         inItViews();
 
-        if(Utils.getSubscribeDuration(MainActivity.this)!=null){
+        if (Utils.getSubscribeDuration(MainActivity.this) != null) {
             vpnConfig();
-        }else{
+        } else {
             loadProfilesFirst();
         }
 
         adView_banner1 = findViewById(R.id.adView_banner1);
         AdRequest adRequest = new AdRequest.Builder().build();
+        ad = new AdView(this);
+        ad.setAdSize(AdSize.MEDIUM_RECTANGLE);
+        ad.setAdUnitId(getResources().getString(R.string.banner1_id));
+        ad.loadAd(adRequest);
         adView_banner1.loadAd(adRequest);
+        if (Utils.currentVpnProfile != null) {
+            if (isVpnConnected(Utils.currentVpnProfile)) {
+                updateView(connected_view, MainActivity.this);
+
+                if (Utils.getCurrentStatus(MainActivity.this).equals(connecting)) {
+                    if (tvStatus != null) {
+
+                        tvStatus.setText(connecting);
+                        // tvStatus.setGravity(Gravity.CENTER);
+
+                        Utils.setCurrentStatus(MainActivity.this, connecting);
+                    }
+                }
+
+            } else {
+                updateView(disconnected_view, MainActivity.this);
+            }
+
+        } else {
+            updateView(disconnected_view, MainActivity.this);
+            Toast.makeText(this, "Location Not Selected", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadProfilesFirst() {
 
         Utils.CURRENT_MONTHS = Utils.SUBSCRIBE_THREE_MONTHS_TAG;
 
-        counterLoad = 0 ;
+        counterLoad = 0;
         startImportingFile();
     }
 
-    private void vpnConfig(){
+    private void vpnConfig() {
 
         progressDialog.setMessage("Disconnecting ...");
         pagerConfig();
-        DisconnectVPN.disconnectListener = (DisconnectVPN.DisconnectListener) MainActivity.this;
         Settings_Allowed_Apps.appsListRefreshListener = (Settings_Allowed_Apps.AppsListRefreshListener) MainActivity.this;
         LaunchVPN.launchVpnListener = (LaunchVPN.LaunchVpnListener) MainActivity.this;
 
@@ -161,36 +201,45 @@ public class MainActivity extends BaseActivity
     private void startImportingFile() {
 
 
-        if(Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_THREE_MONTHS_TAG)){
+        if (Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_THREE_MONTHS_TAG)) {
 
             Utils.ASSETS_FILE = Utils.country_three_months_data.getCountries_profiles()[counterLoad];
 
-        }else if(Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_SIX_MONTHS_TAG)){
+        } else if (Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_SIX_MONTHS_TAG)) {
 
             Utils.ASSETS_FILE = Utils.country_six_months_data.getCountries_profiles()[counterLoad];
 
-        }else if(Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_twelve_Months_TAG)){
+        } else if (Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_twelve_Months_TAG)) {
 
             Utils.ASSETS_FILE = Utils.country_twelve_months_data.getCountries_profiles()[counterLoad];
 
         }
 
-        if(progressDialog!=null && !progressDialog.isShowing()){
+        if (progressDialog != null && !progressDialog.isShowing()) {
             progressDialog.setMessage("Loading Profile ....");
             progressDialog.show();
         }
 
 
-        Log.i(TAG, "startImportingFile: utile file to be load is  "+Utils.ASSETS_FILE);
+        OneTimeWorkRequest insertionWork =
+                new OneTimeWorkRequest.Builder(ConfigWorker.class)
+                        .build();
+        WorkManager.getInstance(this).enqueue(insertionWork);
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(insertionWork.getId()).observe(this, workInfo -> {
+            if (workInfo != null && workInfo.getState().isFinished()) {
+                Intent result = new Intent();
+                ProfileManager profileManager = ProfileManager.getInstance(this);
 
-        Intent startImport = new Intent(MainActivity.this, ConfigConverter.class);
-        startImport.setAction(ConfigConverter.IMPORT_PROFILE);
-        startImport.setData(null);
-        startImport.putExtra(Utils.FILE_TAG,Utils.FILE_TYPE_ASSETS);
-        startActivityForResult(startImport, VPNProfileList.IMPORT_PROFILE);
+                for (VpnProfile profile : profileManager.getProfiles()) {
+                    result.putExtra(VpnProfile.EXTRA_PROFILEUUID, profile.getUUID().toString());
+                    break;
+                }
+
+                onActivityResult(VPNProfileList.IMPORT_PROFILE, RESULT_OK, result);
+            }
+        });
 
     }
-
 
 
     @Override
@@ -218,115 +267,42 @@ public class MainActivity extends BaseActivity
             setList.clear();
         }
         Collection<VpnProfile> allvpn = ProfileManager.getInstance(MainActivity.this).getProfiles();
+        setList.addAll(allvpn);
 
 
-        VpnProfile profileTemp = null;
 
-//        for(VpnProfile profile: allvpn){
-//
-//            Log.i("checkprofilesn", "onResume: in looop "+ profile.getName());
-//
-//            if(profile.getName().contains("nethe")){
-//                if(setList.size()==0){
-//                    Log.i("checkprofilesn", "onResume: contain usa in if "+ profile.getName());
-//                    setList.add(0,profile);
-//                    if(profileTemp!=null){
-//                        setList.add(1,profileTemp);
-//                    }
-//                }else{
-//                    Log.i("checkprofilesn", "onResume: contain usa in else "+ profile.getName());
-//                    profileTemp = profile;
-//                }
-//
-//            }
-//
-//            if(profile.getName().contains("grm")){
-//
-//                if(setList.size()>0){
-//                    Log.i("checkprofilesn", "onResume: contain grm in if ..."+ profile.getName());
-//                    setList.add(1,profile);
-//                }else{
-//                    profileTemp = profile;
-//                }
-//
-//            }
-//        }
+        for (VpnProfile profile : setList) {
 
 
-        for(VpnProfile profile: allvpn){
-
-            setList.add(profile);
-        }
-
-//        if(profileTemp!=null){
-//            if(profileTemp.getName().contains("usa")){
-//                Log.i("checkprofilesn", "onResume: profileTemp ..."+ profileTemp.getName());
-//                    setList.add(0,profileTemp);
-//            }
-//
-//            if(profileTemp.getName().contains("grm")){
-//                Log.i("checkprofilesn", "onResume: profileTemp ..."+ profileTemp.getName());
-//                    setList.add(1,profileTemp);
-//            }
-//        }
-
-        profileTemp = null;
-
-
-        for(VpnProfile profile : setList){
-
-
-            if(profile!=null){
-                Log.i("checkprofilesn", "onResume: end loop just check list ............ "+ profile.getName());
+            if (profile != null) {
+                Log.i("checkprofilesn", "onResume: end loop just check list ............ " + profile.getName());
             }
 
         }
 
-        Utils.setSelectedCountry(MainActivity.this,0);
+        Utils.setSelectedCountry(MainActivity.this, 0);
         // setList.addAll(allvpn);
         String duration = Utils.getSubscribeDuration(MainActivity.this);
         int index = Utils.getSelectedCountry(MainActivity.this);
         if (duration != null) {
             //   setListClickListeners(duration);
-            if(index >= allvpn.size()){
+            if (index >= allvpn.size()) {
                 Utils.currentVpnProfile = null;
                 layout_country_bold.setVisibility(View.GONE);
-            }else{
+            } else {
 
                 Utils.currentVpnProfile = setList.get(index);
                 //  setSelectedCountryTick(index, duration);
                 //  layout_country_bold.setVisibility(View.VISIBLE);
             }
-        }else{
+        } else {
             Utils.currentVpnProfile = null;
             layout_country_bold.setVisibility(View.GONE);
         }
 
-        if (Utils.currentVpnProfile != null) {
-            if (isVpnConnected(Utils.currentVpnProfile)) {
-                updateView(connected_view,MainActivity.this);
 
-                if(Utils.getCurrentStatus(MainActivity.this).equals(connecting)){
-                    if(tvStatus!=null){
 
-                        tvStatus.setText(connecting);
-                        // tvStatus.setGravity(Gravity.CENTER);
 
-                        Utils.setCurrentStatus(MainActivity.this,connecting);
-                    }
-                }
-
-            } else {
-                updateView(disconnected_view,MainActivity.this);
-            }
-
-        } else {
-            updateView(disconnected_view,MainActivity.this);
-            Toast.makeText(this, "Location Not Selected", Toast.LENGTH_SHORT).show();
-        }
-
-        Log.i(Utils.TAG, "onResume: current profile is .. "+ Utils.currentVpnProfile
-                + " .... duration is... "+ duration + " .... INDEX IS ....  "+ index);
 
     }
 
@@ -365,8 +341,6 @@ public class MainActivity extends BaseActivity
         tv_1 = findViewById(R.id.tv_1);
 
 
-
-
         statusDot = findViewById(R.id.status_dot);
         center_img = findViewById(R.id.center_img);
         connection_text_btn = findViewById(R.id.connection_text_btn);
@@ -383,7 +357,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void adsListeners() {
-        interstitialAd_1.setAdListener(new AdListener(){
+        interstitialAd_1.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
                 inter1_load_check = false;
@@ -397,10 +371,10 @@ public class MainActivity extends BaseActivity
 
             @Override
             public void onAdLoaded() {
-                inter1_load_check= true;
+                inter1_load_check = true;
             }
         });
-        interstitialAd_2.setAdListener(new AdListener(){
+        interstitialAd_2.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
                 inter2_load_check = false;
@@ -414,16 +388,17 @@ public class MainActivity extends BaseActivity
 
             @Override
             public void onAdLoaded() {
-                inter2_load_check= true;
+                inter2_load_check = true;
             }
         });
     }
 
 
-    private void inter1_Load(){
+    private void inter1_Load() {
         interstitialAd_1.loadAd(new AdRequest.Builder().build());
     }
-    private void inter2_Load(){
+
+    private void inter2_Load() {
         interstitialAd_2.loadAd(new AdRequest.Builder().build());
     }
 
@@ -465,59 +440,58 @@ public class MainActivity extends BaseActivity
         return VpnStatus.isVPNActive() && profile.getUUIDString().equals(VpnStatus.getLastConnectedVPNProfile());
     }
 
-    public static void updateView(String status,Context context) {
+    public void updateView(String status, Context context) {
 
         Log.i(TAG, "updateView: called for update .. " + status);
 
-        if(statusDot!=null && center_img!=null && tvStatus!=null){
+        if (statusDot != null && center_img != null && tvStatus != null) {
 
 
+            switch (status) {
+                case connected_view:
 
+                    Log.i(TAG, "updateView: 1st conditon .. ");
+                    ///  tv_1.setText(context.getResources().getString(R.string.tv_1_connect));
+                    //   tv_2.setText(context.getResources().getString(R.string.tv_2_connect));
+                    center_img.setImageResource(R.drawable.connected_ok);
 
-            if (status.equals(connected_view)) {
+                    tvStatus.setText("Connected");
+                    statusDot.setImageResource(android.R.drawable.presence_online);
 
+                    connection_text_btn.setText("DISCONNECT NOW");
 
-
-                Log.i(TAG, "updateView: 1st conditon .. ");
-                ///  tv_1.setText(context.getResources().getString(R.string.tv_1_connect));
-                //   tv_2.setText(context.getResources().getString(R.string.tv_2_connect));
-                center_img.setImageResource(R.drawable.connected_ok);
-
-                tvStatus.setText("Connected");
-                statusDot.setImageResource(R.drawable.dot_green);
-
-                connection_text_btn.setText("DISCONNECT NOW");
-
-                // tvStatus.setGravity(Gravity.CENTER);
-                // tv_device_status.setText(context.getResources().getString(R.string.connected_text));
+                    // tvStatus.setGravity(Gravity.CENTER);
+                    // tv_device_status.setText(context.getResources().getString(R.string.connected_text));
 
 //                  Toast.makeText(context, "change views are is ", Toast.LENGTH_SHORT).show();
 
-            } else if (status.equals(disconnected_view)) {
-                Log.i(TAG, "updateView: 2st conditon .. ");
-                center_img.setImageResource(R.drawable.btn_go);
-                statusDot.setImageResource(R.drawable.dot_red);
+                    break;
+                case disconnected_view:
+                    Log.i(TAG, "updateView: 2st conditon .. ");
+                    center_img.setImageResource(R.drawable.btn_go);
+                    statusDot.setImageResource(android.R.drawable.ic_notification_overlay);
 
-                tvStatus.setText("Disconnected");
-                tvStatus.requestLayout();
-                connection_text_btn.setText("CONNECT NOW");
-                // tv_device_status.setText(context.getResources().getString(R.string.disconnected_text));
-                // tv_1.setText(context.getResources().getString(R.string.tv_1_disconnect));
-                // tv_2.setText(context.getResources().getString(R.string.tv_2_disconnect));
-            }else if(status.equals(connecting)){
-                Log.i(TAG, "updateView: 3st conditon .. ");
-                center_img.setImageResource(R.drawable.btn_reload);
-                statusDot.setImageResource(R.drawable.dot_gray);
+                    tvStatus.setText("Disconnected");
+                    tvStatus.requestLayout();
+                    connection_text_btn.setText("CONNECT NOW");
+                    // tv_device_status.setText(context.getResources().getString(R.string.disconnected_text));
+                    // tv_1.setText(context.getResources().getString(R.string.tv_1_disconnect));
+                    // tv_2.setText(context.getResources().getString(R.string.tv_2_disconnect));
+                    break;
+                case connecting:
+                    Log.i(TAG, "updateView: 3st conditon .. ");
+                    center_img.setImageResource(R.drawable.btn_reload);
+                    statusDot.setImageResource(R.drawable.dot_gray);
 
-                tvStatus.setText("Connecting");
-                tvStatus.requestLayout();
-                // tv_device_status.setText(context.getResources().getString(R.string.disconnected_text));
-                // tv_1.setText(context.getResources().getString(R.string.tv_1_disconnect));
-                // tv_2.setText(context.getResources().getString(R.string.tv_2_disconnect));
+                    tvStatus.setText("Connecting");
+                    tvStatus.requestLayout();
+                    // tv_device_status.setText(context.getResources().getString(R.string.disconnected_text));
+                    // tv_1.setText(context.getResources().getString(R.string.tv_1_disconnect));
+                    // tv_2.setText(context.getResources().getString(R.string.tv_2_disconnect));
+                    break;
             }
 
         }
-
 
 
     }
@@ -525,7 +499,7 @@ public class MainActivity extends BaseActivity
 
     private void setListClickListeners(String duration) {
 
-        if(linearLayoutHorizantal.getChildCount()<=0){
+        if (linearLayoutHorizantal.getChildCount() <= 0) {
 
 
             int counter = 0;
@@ -543,41 +517,36 @@ public class MainActivity extends BaseActivity
                     view.setTag(String.valueOf(counter));
                     counter = counter + 1;
 
-                    view.setOnClickListener(new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View view) {
+                    view.setOnClickListener(view1 -> {
 
 
+                        if (!String.valueOf(Utils.getSelectedCountry(MainActivity.this)).equals(view1.getTag())) {
 
-                            if (!String.valueOf(Utils.getSelectedCountry(MainActivity.this)).equals(view.getTag())) {
+                            Utils.setSelectedCountry(MainActivity.this, Integer.valueOf((String) view1.getTag()));
 
-                                Utils.setSelectedCountry(MainActivity.this, Integer.valueOf((String) view.getTag()));
+                            //  Utils.currentVpnProfile = setList.get(Utils.getSelectedCountry(MainActivity.this));
 
-                                //  Utils.currentVpnProfile = setList.get(Utils.getSelectedCountry(MainActivity.this));
-
-                                if(Utils.currentVpnProfile!=null){
-                                    if (isVpnConnected(Utils.currentVpnProfile)) {
-                                        if (progressDialog != null) {
-                                            progressDialog.show();
-                                        }
-                                        new DisconnectVPN(MainActivity.this, DisconnectVPN.DISCONNECT_VPN_RESTART);
+                            if (Utils.currentVpnProfile != null) {
+                                if (isVpnConnected(Utils.currentVpnProfile)) {
+                                    if (progressDialog != null) {
+                                        progressDialog.show();
                                     }
+                                    new DisconnectVPN(MainActivity.this, DisconnectVPN.DISCONNECT_VPN_RESTART);
                                 }
-
-                                Utils.currentVpnProfile = setList.get(Integer.valueOf((String) view.getTag()));
-                                //  setSelectedCountryTick(Integer.valueOf((String) view.getTag()), duration);
-
-                            } else {
-
-                                Toast.makeText(MainActivity.this, "Your Connection Already at selected Country Location ", Toast.LENGTH_SHORT).show();
                             }
 
-                            layout_country_bold.setVisibility(View.VISIBLE);
-                            Toast.makeText(MainActivity.this, "Location Changed", Toast.LENGTH_SHORT).show();
+                            Utils.currentVpnProfile = setList.get(Integer.valueOf((String) view1.getTag()));
+                            //  setSelectedCountryTick(Integer.valueOf((String) view.getTag()), duration);
 
+                        } else {
 
+                            Toast.makeText(MainActivity.this, "Your Connection Already at selected Country Location ", Toast.LENGTH_SHORT).show();
                         }
+
+                        layout_country_bold.setVisibility(View.VISIBLE);
+                        Toast.makeText(MainActivity.this, "Location Changed", Toast.LENGTH_SHORT).show();
+
+
                     });
                     linearLayoutHorizantal.addView(view, getLinearLayoutPramas());
                 }
@@ -730,8 +699,8 @@ public class MainActivity extends BaseActivity
 
     private View getCountryView(String title, int id) {
 
-        View view = LayoutInflater.from(this).inflate(R.layout.flag_layout,null,false);
-        ((ImageView)((ViewGroup)view).findViewById(R.id.flag_img)).setImageResource(id);
+        View view = LayoutInflater.from(this).inflate(R.layout.flag_layout, null, false);
+        ((ImageView) ((ViewGroup) view).findViewById(R.id.flag_img)).setImageResource(id);
         return view;
     }
 
@@ -777,45 +746,38 @@ public class MainActivity extends BaseActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 
-        if(progressDialog!=null){
-            if(progressDialog.isShowing()){ progressDialog.dismiss();}
+        if (progressDialog != null) {
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
         }
 
         if (requestCode == VPNProfileList.IMPORT_PROFILE) {
 
             // send profile to main activity other view hide completely
 
-            if(Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_THREE_MONTHS_TAG)){
-
-                if(counterLoad == Utils.country_three_months_data.getCountries_profiles().length - 1){
-
-                    String profileUUID = data.getStringExtra(VpnProfile.EXTRA_PROFILEUUID);
-                    VpnProfile vpnProfile = ProfileManager.get(MainActivity.this, profileUUID);
-                    Utils.setSubscribeDuration(MainActivity.this,true,Utils.SUBSCRIBE_THREE_MONTHS_TAG);
-                    Utils.currentVpnProfile = vpnProfile;
-
-                    //  Utils.setSelectedCountry(SubscriptionActivity.this,0);
-
-                    if(progressDialog!=null && progressDialog.isShowing()){
-                        progressDialog.dismiss();
-                    }
+            if (Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_THREE_MONTHS_TAG)) {
 
 
-                    Utils.currentVpnProfile = null;
-                    vpnConfig();
+                String profileUUID = data.getStringExtra(VpnProfile.EXTRA_PROFILEUUID);
+                VpnProfile vpnProfile = ProfileManager.get(MainActivity.this, profileUUID);
+                Utils.setSubscribeDuration(MainActivity.this, true, Utils.SUBSCRIBE_THREE_MONTHS_TAG);
+                Utils.currentVpnProfile = vpnProfile;
+                setList.addAll(ProfileManager.getInstance(this).getProfiles());
 
-                }else{
+                //  Utils.setSelectedCountry(SubscriptionActivity.this,0);
 
-                    counterLoad = counterLoad + 1 ;
-                    startImportingFile();
-
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
                 }
+                vpnConfig();
 
-            }else if(Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_SIX_MONTHS_TAG)){
+
+            } else if (Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_SIX_MONTHS_TAG)) {
 
                 Toast.makeText(this, "not defined yet", Toast.LENGTH_SHORT).show();
 
-            }else if(Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_twelve_Months_TAG)){
+            } else if (Utils.CURRENT_MONTHS.equals(Utils.SUBSCRIBE_twelve_Months_TAG)) {
 
                 Toast.makeText(this, "not defined yet", Toast.LENGTH_SHORT).show();
 
@@ -827,6 +789,10 @@ public class MainActivity extends BaseActivity
         System.out.println(data);
 
 
+    }
+
+    public void callOnClickFromVPNProfileList() {
+        onClick(connection_text_btn);
     }
 
     @Override
@@ -843,7 +809,7 @@ public class MainActivity extends BaseActivity
                         switch (item.getItemId()) {
 
                             case R.id.allow_apps_id:
-                                if(Utils.currentVpnProfile==null){
+                                if (Utils.currentVpnProfile == null) {
                                     Toast.makeText(MainActivity.this, "Location not selected", Toast.LENGTH_SHORT).show();
                                     break;
                                 }
@@ -852,7 +818,7 @@ public class MainActivity extends BaseActivity
                                 break;
 
                             case R.id.data_usage_id:
-                                if(inter2_load_check){
+                                if (inter2_load_check) {
                                     interstitialAd_1.show();
                                 }
                                 showFragment(SHOW_FRAGMENT_GRPH);
@@ -880,21 +846,11 @@ public class MainActivity extends BaseActivity
                 if (Utils.currentVpnProfile != null) {
 
                     if (isVpnConnected(Utils.currentVpnProfile)) {
-
-
-
-
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle(R.string.title_cancel);
+                        builder.setView(ad);
                         builder.setMessage(R.string.cancel_connection_query);
-                        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                                dialogInterface.dismiss();
-
-                            }
-                        });
+                        builder.setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
                         builder.setPositiveButton(R.string.cancel_connection, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -916,11 +872,6 @@ public class MainActivity extends BaseActivity
                         builder.show();
 
                     } else {
-                        if(interstitialAd_2.isLoaded()){
-                            interstitialAd_2.show();
-                        }else{
-                            inter2_Load();
-                        }
                         startVPN(Utils.currentVpnProfile);
                     }
                 } else {
@@ -999,7 +950,7 @@ public class MainActivity extends BaseActivity
                 progressDialog.dismiss();
             }
         }
-        updateView(disconnected_view,MainActivity.this);
+        updateView(disconnected_view, MainActivity.this);
         if (isReconnect) {
             startVPN(Utils.currentVpnProfile);
             tvStatus.setText("ReConnecting");
@@ -1017,7 +968,7 @@ public class MainActivity extends BaseActivity
 
             case R.string.state_connecting:
                 tvStatus.setText(connecting);
-                Utils.setCurrentStatus(MainActivity.this,connecting);
+                Utils.setCurrentStatus(MainActivity.this, connecting);
                 Log.i(TAG, "updateState: connecting");
                 new Thread(new Runnable() {
                     @Override
@@ -1025,7 +976,7 @@ public class MainActivity extends BaseActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                updateView(connecting,MainActivity.this);
+                                updateView(connecting, MainActivity.this);
                             }
                         });
                     }
@@ -1039,8 +990,8 @@ public class MainActivity extends BaseActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Utils.setCurrentStatus(MainActivity.this,connecting);
-                                updateView(connecting,MainActivity.this);
+                                Utils.setCurrentStatus(MainActivity.this, connecting);
+                                updateView(connecting, MainActivity.this);
                             }
                         });
                     }
@@ -1057,8 +1008,8 @@ public class MainActivity extends BaseActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Utils.setCurrentStatus(MainActivity.this,connecting);
-                                updateView(connecting,MainActivity.this);
+                                Utils.setCurrentStatus(MainActivity.this, connecting);
+                                updateView(connecting, MainActivity.this);
                             }
                         });
                     }
@@ -1075,8 +1026,8 @@ public class MainActivity extends BaseActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Utils.setCurrentStatus(MainActivity.this,connecting);
-                                updateView(connecting,MainActivity.this);
+                                Utils.setCurrentStatus(MainActivity.this, connecting);
+                                updateView(connecting, MainActivity.this);
                             }
                         });
                     }
@@ -1092,14 +1043,13 @@ public class MainActivity extends BaseActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Utils.setCurrentStatus(MainActivity.this,connecting);
-                                updateView(connecting,MainActivity.this);
+                                Utils.setCurrentStatus(MainActivity.this, connecting);
+                                updateView(connecting, MainActivity.this);
                             }
                         });
                     }
                 }).start();
 
-                tvStatus.setText(connecting);
                 Log.i(TAG, "updateState: sever assign ip adress");
 
                 break;
@@ -1110,17 +1060,15 @@ public class MainActivity extends BaseActivity
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Utils.setCurrentStatus(MainActivity.this,connecting);
-                                updateView(connecting,MainActivity.this);
+                                Utils.setCurrentStatus(MainActivity.this, connecting);
+                                updateView(connecting, MainActivity.this);
                             }
                         });
                     }
                 }).start();
 
-                tvStatus.setText(connecting);
-                Log.i(TAG, "updateState: sever routes");
 
-                updateView(connecting,this);
+                Log.i(TAG, "updateState: sever routes");
                 break;
             case R.string.state_connected:
                 new Thread(new Runnable() {
@@ -1130,7 +1078,12 @@ public class MainActivity extends BaseActivity
                             @Override
                             public void run() {
                                 tvStatus.setText("Connected");
-                                updateView(connected_view,MainActivity.this);
+                                updateView(connected_view, MainActivity.this);
+                                if (interstitialAd_2.isLoaded()) {
+                                    interstitialAd_2.show();
+                                } else {
+                                    inter2_Load();
+                                }
                             }
                         });
                     }
@@ -1138,47 +1091,31 @@ public class MainActivity extends BaseActivity
 
                 Log.i(TAG, "updateState: sever connected");
                 //updateView(connected_view);
-                Utils.setCurrentStatus(MainActivity.this,other);
+                Utils.setCurrentStatus(MainActivity.this, other);
 
                 tv_1.setText(getResources().getString(R.string.tv_1_connect));
                 tv_2.setText(getResources().getString(R.string.tv_2_connect));
                 center_img.setImageResource(R.drawable.connected_ok);
 
+
                 break;
             case R.string.state_disconnected:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "try later, some error exit", Toast.LENGTH_SHORT).show();
-                                updateView(disconnected_view,MainActivity.this);
-                            }
-                        });
-                    }
-                }).start();
+                new Thread(() -> runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "try later, some error exit", Toast.LENGTH_SHORT).show();
+                    updateView(disconnected_view, MainActivity.this);
+                })).start();
 
-                Utils.setCurrentStatus(MainActivity.this,other);
+                Utils.setCurrentStatus(MainActivity.this, other);
                 Log.i(TAG, "updateState: sever disconnected");
 
                 break;
             case R.string.state_reconnecting:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Utils.setCurrentStatus(MainActivity.this,connecting);
-                                tvStatus.setGravity(Gravity.CENTER);
-                                updateView(connecting,MainActivity.this);
-                            }
-                        });
-                    }
-                }).start();
+                new Thread(() -> runOnUiThread(() -> {
+                    Utils.setCurrentStatus(MainActivity.this, connecting);
+                    tvStatus.setGravity(Gravity.CENTER);
+                    updateView(connecting, MainActivity.this);
+                })).start();
 
-                tvStatus.setText(connecting);
                 Log.i(TAG, "updateState: sever reconnecting");
                 break;
             case R.string.state_exiting:
@@ -1189,13 +1126,13 @@ public class MainActivity extends BaseActivity
                             @Override
                             public void run() {
                                 Toast.makeText(MainActivity.this, "try later, some error exit", Toast.LENGTH_SHORT).show();
-                                updateView(disconnected_view,MainActivity.this);
+                                updateView(disconnected_view, MainActivity.this);
                             }
                         });
                     }
                 }).start();
 
-                Utils.setCurrentStatus(MainActivity.this,other);
+                Utils.setCurrentStatus(MainActivity.this, other);
                 Log.i(TAG, "updateState: sever exiting");
                 break;
 
@@ -1204,10 +1141,10 @@ public class MainActivity extends BaseActivity
         }
         if (logmessage.equals(R.string.state_noprocess)) {
 
-            Utils.setCurrentStatus(MainActivity.this,other);
+            Utils.setCurrentStatus(MainActivity.this, other);
 
             Toast.makeText(this, "no process running ", Toast.LENGTH_SHORT).show();
-            updateView(disconnected_view,MainActivity.this);
+            updateView(disconnected_view, MainActivity.this);
         }
     }
 
@@ -1235,6 +1172,6 @@ public class MainActivity extends BaseActivity
     @Override
     public void lunchCancel() {
         Toast.makeText(this, "Allow app permission to start vpn MyDissconnectService", Toast.LENGTH_SHORT).show();
-        updateView(disconnected_view,MainActivity.this);
+        updateView(disconnected_view, MainActivity.this);
     }
 }

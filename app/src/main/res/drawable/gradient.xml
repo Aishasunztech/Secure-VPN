@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="rectangle">
+            <gradient
+                android:endColor="#2970E2"
+                android:gradientRadius="50%"
+                android:startColor="#B5E0F7"
+                android:type="radial" />
+
+        </shape>
+    </item>
+    <item>
+        <bitmap android:src="@drawable/ic_logo_vpn"
+            android:gravity="center"
+            android:dither="true"
+            />
+    </item>
+
+</layer-list>

@@ -29,18 +29,18 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.support.annotation.DrawableRes;
-import android.support.v4.os.ParcelableCompat;
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewConfigurationCompat;
-import android.support.v4.view.accessibility.AccessibilityEventCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.view.accessibility.AccessibilityRecordCompat;
-import android.support.v4.widget.EdgeEffectCompat;
+import androidx.annotation.DrawableRes;
+import androidx.core.os.ParcelableCompat;
+import androidx.core.os.ParcelableCompatCreatorCallbacks;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.VelocityTrackerCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewConfigurationCompat;
+import androidx.core.view.accessibility.AccessibilityEventCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityRecordCompat;
+import androidx.core.widget.EdgeEffectCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.FocusFinder;
@@ -56,6 +56,8 @@ import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
+
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ import java.util.Comparator;
  * There are standard adapters implemented for using fragments with the ViewPager,
  * which cover the most common use cases.  These are
  * {@link android.support.v4n.app.FragmentPagerAdapter} and
- * {@link android.support.v4.app.FragmentStatePagerAdapter}; each of these
+ * {@link FragmentStatePagerAdapter}; each of these
  * classes have simple code showing how to build a full user interface
  * with them.
  *

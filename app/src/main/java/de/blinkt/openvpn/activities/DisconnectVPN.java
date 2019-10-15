@@ -17,9 +17,13 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.blinkt.openvpn.LaunchVPN;
 import de.blinkt.openvpn.MyDissconnectService;
 import de.blinkt.openvpn.Utils;
+import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
@@ -34,16 +38,16 @@ public class DisconnectVPN implements DialogInterface.OnClickListener, DialogInt
 
 
 
-    public static final String DISCONNECT_VPN_BTN = "DISCONNECT_VPN_BTN";
+    static final String DISCONNECT_VPN_BTN = "DISCONNECT_VPN_BTN";
     public static final String DISCONNECT_VPN_NOTIFICATION = "DISCONNECT_VPN_NOTIFICATION";
     public static final String DISCONNECT_VPN_RESTART = "DISCONNECT_VPN_RESTART";
     public static final String DISCONNECT_VPN_RESTART_APPS_REFRESH = "DISCONNECT_VPN_RESTART_APPS_REFRESH";
-    public static String DISCONNECT_VPN_TAG = "DISCONNECT_VPN_TAG";
+    public  String DISCONNECT_VPN_TAG = "DISCONNECT_VPN_TAG";
 
 
     private Context context;
 
-    public static DisconnectListener disconnectListener;
+    public  DisconnectListener disconnectListener;
 
 
 
@@ -51,6 +55,11 @@ public class DisconnectVPN implements DialogInterface.OnClickListener, DialogInt
     public DisconnectVPN(Context context, String type){
         this.context = context;
         DISCONNECT_VPN_TAG = type;
+        try {
+            disconnectListener = (DisconnectListener) context;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //  Toast.makeText(context, "disconnect call", Toast.LENGTH_SHORT).show();
 
@@ -86,14 +95,10 @@ public class DisconnectVPN implements DialogInterface.OnClickListener, DialogInt
 
     private void showDisconnectDialog() {
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
+            onClick(new Dialog(context), DialogInterface.BUTTON_POSITIVE);
+            if(progressDialog!=null){progressDialog.dismiss();
 
-                onClick(new Dialog(context), DialogInterface.BUTTON_POSITIVE);
-                if(progressDialog!=null){progressDialog.dismiss();
-
-                }
             }
         },2000);
 
@@ -129,7 +134,11 @@ public class DisconnectVPN implements DialogInterface.OnClickListener, DialogInt
                         }
                     }else if(DISCONNECT_VPN_TAG.equals(DISCONNECT_VPN_NOTIFICATION)){
 
-                        MainActivity.updateView(MainActivity.disconnected_view,context);
+                        try {
+                            ((MainActivity)context).updateView(MainActivity.disconnected_view,context);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
 
@@ -152,9 +161,9 @@ public class DisconnectVPN implements DialogInterface.OnClickListener, DialogInt
 
         context.stopService(new Intent(context, MyDissconnectService.class));
 
-        if(MainActivity.setList!=null){
-            Utils.currentVpnProfile = MainActivity.setList.get(Utils.getSelectedCountry(context));
-        }
+        Collection<VpnProfile> profiles = ProfileManager.getInstance(context).getProfiles();
+            Utils.currentVpnProfile = new ArrayList<>(profiles).get(Utils.getSelectedCountry(context));
+
     }
 
     @Override

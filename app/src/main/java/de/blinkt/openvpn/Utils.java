@@ -115,6 +115,8 @@ public class Utils {
 
 
     private static final String PROFILE_COUNTRY_INDEX = "PROFILE_COUNTRY_INDEX";
+    public static final String TOUR_STATUS = "IsTourDone";
+
 
 
 

@@ -29,12 +29,14 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
  * the user's scroll progress.
  * <p>
  * To use the component, simply add it to your view hierarchy. Then in your
- * {@link android.app.Activity} or {@link android.support.v4.app.Fragment} call
+ * {@link android.app.Activity} or {@link Fragment} call
  * {@link #setViewPager(ViewPager)} providing it the ViewPager this layout is being used for.
  * <p>
  * The colors can be customized in two ways. The first and simplest is to provide an array of colors

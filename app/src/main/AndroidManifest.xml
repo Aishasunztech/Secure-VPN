@@ -34,15 +34,7 @@
 
         <activity android:name=".activities.GetStartedActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-
-        </activity>
+                    </activity>
         <activity android:name=".activities.FragmentShowMainActivity" />
         <activity android:name=".activities.SubscriptionActivity"></activity>
         <activity
@@ -64,7 +56,14 @@
         <activity android:name=".activities.FileSelect" />
         <activity
             android:name=".activities.MainActivity"
+            android:theme="@style/splashScreenTheme"
             tools:ignore="ExportedActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service

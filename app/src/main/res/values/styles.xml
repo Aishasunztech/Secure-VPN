@@ -7,6 +7,7 @@
 <resources>
     <style name="blinkt.baseTheme" parent="android:Theme.DeviceDefault.Light" />
     <style name="blinkt" parent="blinkt.baseTheme" />
+    <style name="AppCompatTHeme" parent="Theme.AppCompat.Light.NoActionBar"/>
 
     <style name="blinkt.dialog" parent="android:Theme.DeviceDefault.Light.Dialog" />
 
@@ -64,5 +65,10 @@
         <item name="android:textColor">@color/black</item>
         <item name="android:textStyle">bold</item>
 
+    </style>
+
+    <style name="splashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">#2970E2</item>
+    <item name="android:windowBackground">@drawable/gradient</item>
     </style>
 </resources>

@@ -21,7 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.util.Log;
@@ -152,7 +152,7 @@ public class VPNProfileList extends ListFragment implements OnClickListener, Vpn
 //            startVPN(profile);
 //        }
 
-        ((MainActivity)getActivity()).onClick((MainActivity.connection_text_btn));
+        ((MainActivity)getActivity()).callOnClickFromVPNProfileList();
 
     }
 

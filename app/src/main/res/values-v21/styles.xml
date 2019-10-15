@@ -26,4 +26,9 @@
         <item name="android:colorAccent">@color/accent</item>
     </style>
 
+    <style name="splashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorPrimaryDark">#2970E2</item>
+        <item name="android:windowBackground">@drawable/gradient</item>
+    </style>
+
 </resources>
